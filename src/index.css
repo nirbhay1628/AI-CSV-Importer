@@ -1,0 +1,84 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  
+  --color-brand-green: #225d51;
+  --color-brand-green-dark: #1b4b41;
+  --color-brand-dark: #030712;
+  --color-slate-950: #020617;
+  
+  --color-emerald-50: #f1f7f5;
+  --color-emerald-100: #e2eff0;
+  --color-emerald-200: #c4deda;
+  --color-emerald-300: #9bc6be;
+  --color-emerald-400: #6ca59a;
+  --color-emerald-500: #225d51;
+  --color-emerald-600: #1b4b41;
+  --color-emerald-700: #153a32;
+  --color-emerald-800: #102a24;
+  --color-emerald-900: #0b1a16;
+  --color-emerald-950: #050b0a;
+  
+  --animate-fade-in: fade-in 0.3s ease-out;
+  --animate-pulse-subtle: pulse-subtle 2s infinite ease-in-out;
+  --animate-float: float-animation 4s infinite ease-in-out;
+  
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse-subtle {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+  @keyframes float-animation {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+}
+
+/* Custom glow borders and glass effects */
+.glass-panel {
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-panel-light {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.glow-green {
+  box-shadow: 0 0 20px rgba(34, 93, 81, 0.25);
+}
+
+.glow-green-sm {
+  box-shadow: 0 0 10px rgba(34, 93, 81, 0.2);
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.25);
+  border-radius: 9999px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.45);
+}

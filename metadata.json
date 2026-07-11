@@ -1,0 +1,6 @@
+{
+  "name": "AI-Powered CSV Importer",
+  "description": "An AI-powered CSV Importer that intelligently extracts CRM lead information from any valid CSV format.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
