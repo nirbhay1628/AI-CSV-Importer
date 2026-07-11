@@ -1,4 +1,4 @@
-# GrowEasy: AI-Powered CRM CSV Importer
+# AI-Powered CRM CSV Importer
 
 A high-performance, full-stack, AI-powered CSV lead importer designed for **GrowEasy**. This application intelligently extracts, normalizes, and maps arbitrary CSV data structures into a unified 15-field CRM contact scheme using Gemini 3.5 AI.
 
