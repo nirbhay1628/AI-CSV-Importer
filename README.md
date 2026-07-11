@@ -54,8 +54,6 @@ Create a `.env` file in the root directory (using `.env.example` as reference):
 GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
 NODE_ENV="production"
 ```
-*(Note: In Google AI Studio, the `GEMINI_API_KEY` is automatically managed and injected server-side via the **Settings > Secrets** panel.)*
-
 ### 3. Install Dependencies
 ```bash
 npm install
