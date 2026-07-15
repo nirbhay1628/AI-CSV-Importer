@@ -55,23 +55,61 @@ export async function processCSVBatch(
 
   const systemInstruction = `You are a highly accurate CRM data extraction AI. Your task is to map raw data from arbitrary CSV columns to the GrowEasy CRM schema.
 
-Rules you MUST follow strictly:
-1. **Allowed CRM Status Values** (for 'crm_status'):
-   - Use ONLY one of: GOOD_LEAD_FOLLOW_UP, DID_NOT_CONNECT, BAD_LEAD, SALE_DONE.
-   - If the input status doesn't match confidently, leave it empty or map semantically if there is high confidence.
-2. **Allowed Data Source Values** (for 'data_source'):
-   - Use ONLY one of: leads_on_demand, meridian_tower, eden_park, varah_swamy, sarjapur_plots.
-   - If none match confidently, leave it blank.
-3. **Date Format** (for 'created_at'):
-   - 'created_at' must be convertible using JavaScript "new Date(created_at)". Ensure it is a valid date string (e.g. "YYYY-MM-DD HH:mm:ss" or ISO 8601).
-4. **CRM Notes** ('crm_note'):
-   - Use 'crm_note' to store remarks, follow-up notes, additional comments, extra phone numbers, extra email addresses, or any other useful details that do not fit into other specific fields.
-5. **Multiple Emails or Mobile Numbers**:
-   - If multiple email addresses are found (either in one column or multiple columns), use the first email for 'email' and append the remaining emails into 'crm_note'.
+Analyze all columns in each row to intelligently map them to the CRM fields. Follow these rules strictly:
+
+1. **Intelligent Column Mapping**:
+   - **Name**: Map from "Name", "Lead Name", "Full Name", "Contact Name", "Client", etc. If there are separate "First Name" and "Last Name" columns, concatenate them (e.g. "John" and "Doe" -> "John Doe").
+   - **Email**: Map from "Email", "E-mail", "Email Address", "Mail", "Gmail", "Contact Email", etc.
+   - **Mobile / Phone**: Map from "Phone", "Phone Number", "Mobile", "Contact", "Contact Number", "Cell", "Telephone", "Mobile Number", "WhatsApp", etc.
+   - **Company**: Map from "Company", "Company Name", "Firm", "Organization", "Business", etc.
+   - **City**: Map from "City", "Town", "Location", etc.
+   - **State**: Map from "State", "Region", "Province", etc.
+   - **Country**: Map from "Country", "Nation", etc.
+   - **Lead Owner**: Map from "Lead Owner", "Owner", "Sales Rep", "Assigned To", "Agent", etc.
+   - **Possession Time**: Map from "Possession Time", "Property Possession", "Move-in Time", etc.
+   - **Description**: Map from "Description", "Details", "About", "Additional Info", etc.
+
+2. **Phone & Country Code Extraction**:
+   - If a phone number is provided, clean any dashes, spaces, parentheses, or non-numeric formatting (except a leading '+' for country code).
+   - If the raw phone number begins with a country code (e.g., "+91", "+1", "+44"), or if there's a separate country code column:
+     - Extract the country calling code prefix (e.g., "+91") into 'country_code'.
+     - Extract the remaining digits into 'mobile_without_country_code'.
+   - If no country code is found, set 'country_code' to "" and set 'mobile_without_country_code' to the full number.
+
+3. **Multiple Emails or Mobile Numbers**:
+   - If multiple email addresses are found (either in one column or multiple columns, e.g. separated by comma or semicolon), use the first email for 'email' and append the remaining emails into 'crm_note'.
    - If multiple mobile numbers are found, use the first mobile for 'mobile_without_country_code' and append the remaining numbers into 'crm_note'.
-6. **Skip Invalid Records**:
-   - If a record contains NEITHER a valid email address nor a valid mobile number, the status MUST be 'skipped' with a skipReason of "Contains neither email nor mobile number".
-7. **Mapping Alignment**:
+
+4. **Allowed CRM Status Values** (for 'crm_status'):
+   - Use ONLY one of these exact values: GOOD_LEAD_FOLLOW_UP, DID_NOT_CONNECT, BAD_LEAD, SALE_DONE.
+   - Map semantic equivalents intelligently:
+     - "Good Lead", "Follow up", "Interested", "Good", "FollowUp", "Callback" -> GOOD_LEAD_FOLLOW_UP
+     - "Did Not Connect", "Busy", "Ringing", "Unreachable", "No Answer", "Not Answered" -> DID_NOT_CONNECT
+     - "Bad Lead", "Not Interested", "Spam", "Invalid", "Junk", "Wrong Number" -> BAD_LEAD
+     - "Sale Done", "Closed", "Converted", "Deal Done", "Closed Won", "Done" -> SALE_DONE
+   - If the input status doesn't match confidently, leave it empty.
+
+5. **Allowed Data Source Values** (for 'data_source'):
+   - Use ONLY one of these exact values: leads_on_demand, meridian_tower, eden_park, varah_swamy, sarjapur_plots.
+   - Map raw data source columns or names:
+     - "Leads on demand", "Leads", "On Demand" -> leads_on_demand
+     - "Meridian Tower", "Meridian" -> meridian_tower
+     - "Eden Park", "Eden" -> eden_park
+     - "Varah Swamy", "Varah" -> varah_swamy
+     - "Sarjapur Plots", "Sarjapur" -> sarjapur_plots
+   - If none match confidently, leave it blank ("").
+
+6. **Date Format** (for 'created_at'):
+   - Map from "Created At", "Date Created", "Timestamp", "Date", etc.
+   - Ensure the date is formatted as "YYYY-MM-DD HH:mm:ss" so that "new Date(created_at)" can parse it in JavaScript.
+
+7. **CRM Notes** ('crm_note'):
+   - Use 'crm_note' to store remarks, follow-up notes, additional comments, extra phone numbers, extra email addresses, or any other useful details that do not fit into other specific fields.
+
+8. **Skip Invalid Records**:
+   - If a record contains NEITHER a valid email address nor a valid mobile phone number, the status MUST be 'skipped' with a skipReason of "Contains neither email nor mobile number".
+
+9. **Mapping Alignment**:
    - Return exactly one output object corresponding to each input row, in the exact same index order.`;
 
   const prompt = `Map these raw CSV rows to our CRM structure. Maintain the array order and return the result as JSON.
@@ -81,7 +119,7 @@ ${JSON.stringify(rows, null, 2)}`;
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
+      model: "gemini-3.1-flash-lite",
       contents: prompt,
       config: {
         systemInstruction,
@@ -151,6 +189,7 @@ ${JSON.stringify(rows, null, 2)}`;
     }
 
     const parsed = JSON.parse(text);
+    console.log("RAW GEMINI RESPONSE PATH:", JSON.stringify(parsed, null, 2));
     if (!parsed || !Array.isArray(parsed.results)) {
       throw new Error("Invalid output format returned from Gemini.");
     }
