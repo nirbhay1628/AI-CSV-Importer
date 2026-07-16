@@ -1,6 +1,6 @@
 # GrowEasy: AI-Powered CRM CSV Importer
 
-A high-performance, full-stack, AI-powered CSV lead importer designed for **GrowEasy**. This application intelligently extracts, normalizes, and maps arbitrary CSV data structures into a unified 15-field CRM contact scheme using Gemini 3.5 AI.
+A high-performance, full-stack, AI-powered CSV lead importer designed for **GrowEasy**. This application intelligently extracts, normalizes, and maps arbitrary CSV data structures into a unified 15-field CRM contact scheme using Gemini AI.
 
 ## 🚀 Key Features
 
@@ -37,7 +37,7 @@ The system utilizes server-side Gemini AI models to map raw headers and records 
 
 - **Frontend**: React 19, TypeScript, Tailwind CSS, Lucide Icons, Framer Motion
 - **Backend**: Node.js, Express (Vite Middleware in Dev, Standalone statically served build in Production)
-- **AI Engine**: `@google/genai` TypeScript SDK running server-side (`gemini-3.5-flash`)
+- **AI Engine**: `@google/genai` TypeScript SDK running server-side (`gemini-3.1-flash-lite`)
 - **Build System**: Vite, Esbuild (Bundles `server.ts` into a single CommonJS CJS file in `dist/server.cjs` for lightning-fast container cold-starts)
 
 ---
@@ -54,7 +54,7 @@ Create a `.env` file in the root directory (using `.env.example` as reference):
 GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
 NODE_ENV="production"
 ```
-*(Note: In Google AI Studio, the `GEMINI_API_KEY` is automatically managed and injected server-side via the **Settings > Secrets** panel.)*
+*(Note: Ensure the `GEMINI_API_KEY` is added to your environment variables or local shell environment.)*
 
 ### 3. Install Dependencies
 ```bash
